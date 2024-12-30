@@ -5,7 +5,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Cabins')
 @ApiBearerAuth('access-token')
-@Controller('cabins')
+@Controller('api/cabins')
 @UseGuards(JwtAuthGuard)
 export class CabinsController {
     constructor(private readonly cabinsService: CabinsService) { }

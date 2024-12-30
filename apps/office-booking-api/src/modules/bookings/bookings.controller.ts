@@ -32,7 +32,7 @@ import { Booking } from '@office-booking-monorepo/types';
 
 @ApiTags('Bookings')
 @ApiBearerAuth('access-token')
-@Controller('bookings')
+@Controller('api/bookings')
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) { }
 

@@ -20,7 +20,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagg
 import { UserRole } from '../../shared/utils/user-role.enum';
 
 @ApiTags('Payments')
-@Controller('payments')
+@Controller('api/payments')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
 export class PaymentsController {

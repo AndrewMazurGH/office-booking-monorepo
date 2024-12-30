@@ -6,8 +6,17 @@ import { Cabin, CabinDocument } from '../../shared/schemas/cabin.schema';
 @Injectable()
 export class CabinsService {
     constructor(
-        @InjectModel(Cabin.name) private cabinModel: Model<CabinDocument>,
+        @InjectModel(Cabin.name) private cabinModel: Model<CabinDocument>
     ) { }
+
+    async createForTesting(data: {
+        name: string;
+        capacity: number;
+        description: string;
+        isAvailable: boolean;
+    }): Promise<CabinDocument> {
+        return this.cabinModel.create(data);
+    }
 
     async findAll() {
         // Наприклад, повертати лише ті, що isAvailable = true
