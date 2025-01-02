@@ -100,11 +100,14 @@ export class UsersService {
     }
 
     async findAll(): Promise<User[]> {
-        const docs = await this.userModel.find().exec();
-        return docs.map((doc) => ({
-            id: doc._id.toString(),
-            email: doc.email,
-            role: doc.role,       // doc.role як UserRole
+        const users = await this.userModel.find().exec();
+        return users.map(user => ({
+            id: user._id.toString(),
+            email: user.email,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            phone: user.phone || '',
+            role: user.role || UserRole.USER
         }));
     }
 }

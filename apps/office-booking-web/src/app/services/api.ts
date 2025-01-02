@@ -1,8 +1,8 @@
-// apps/office-booking-web/src/app/services/api.ts
+// In src/app/services/api.ts
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3000', // Make sure this matches your backend URL
     headers: {
         'Content-Type': 'application/json',
     }
@@ -11,21 +11,20 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
     (config) => {
-        // Log request
-        console.log('API Request:', {
-            url: config.url,
-            method: config.method,
-            data: config.data
-        });
-
         const token = localStorage.getItem('access_token');
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        // Debug request config
+        console.log('API Request Config:', {
+            url: config.url,
+            method: config.method,
+            headers: config.headers
+        });
         return config;
     },
     (error) => {
-        console.error('API Request Error:', error);
+        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
@@ -33,7 +32,7 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
     (response) => {
-        // Log successful response
+        // Debug successful response
         console.log('API Response:', {
             url: response.config.url,
             status: response.status,
@@ -42,11 +41,12 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-        // Log error response
-        console.error('API Error Response:', {
+        // Debug error response
+        console.error('API Error:', {
             url: error.config?.url,
             status: error.response?.status,
-            data: error.response?.data
+            data: error.response?.data,
+            message: error.message
         });
         return Promise.reject(error);
     }

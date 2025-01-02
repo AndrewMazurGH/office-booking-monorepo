@@ -16,6 +16,17 @@ import { ApiTags, ApiOperation, ApiParam, ApiBody, ApiBearerAuth, ApiResponse } 
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER)
+    @ApiOperation({ summary: 'Get all users' })
+    @ApiResponse({ status: 200, description: 'Returns all current user info' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async getAllUsers(): Promise<UserResponse[]> {
+        const users = await this.usersService.findAll();
+        return users.map(user => UserResponse.fromDocument(user));
+    }
+
     @Post('register')
     @ApiOperation({ summary: 'Зареєструвати нового користувача' })
     @ApiResponse({ status: 201, description: 'User successfully created' })
