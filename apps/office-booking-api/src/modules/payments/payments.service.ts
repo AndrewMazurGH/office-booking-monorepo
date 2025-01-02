@@ -1,10 +1,14 @@
 import {
-    Injectable, NotFoundException, BadRequestException, Inject, forwardRef
+    Injectable,
+    NotFoundException,
+    BadRequestException,
+    Inject,
+    forwardRef
 } from '@nestjs/common';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Model, Types, Connection } from 'mongoose';
 import { Payment, PaymentDocument, PaymentStatus } from '../../shared/schemas/payment.schema';
-import { CreatePaymentDto } from '../../shared/dto/create-payment.dto';
+import { CreatePaymentDto, PaymentResponseDto } from '../../shared/dto/create-payment.dto';
 import { UpdatePaymentDto } from '../../shared/dto/update-payment.dto';
 import { BookingsService } from '../bookings/bookings.service';
 
@@ -17,7 +21,7 @@ export class PaymentsService {
         private bookingsService: BookingsService,
     ) { }
 
-    async createPayment(userId: string, dto: CreatePaymentDto): Promise<PaymentDocument> {
+    async createPayment(userId: string, dto: CreatePaymentDto): Promise<PaymentResponseDto> {
         const session = await this.connection.startSession();
         session.startTransaction();
 
@@ -27,18 +31,24 @@ export class PaymentsService {
                 throw new BadRequestException('Amount should be greater than 0');
             }
 
-            // Verify booking exists and belongs to user
+            // Convert IDs to ObjectId
+            const userObjectId = new Types.ObjectId(userId);
+            const bookingObjectId = new Types.ObjectId(dto.bookingId);
+
+            // Verify booking exists
             const booking = await this.bookingsService.findById(dto.bookingId);
             if (!booking) {
                 throw new NotFoundException('Booking not found');
             }
-            if (booking.userId.toString() !== userId) {
+
+            // Check booking ownership - compare string representations
+            if (booking.userId !== userId) {
                 throw new BadRequestException('Booking does not belong to user');
             }
 
-            // Check for existing payments for this booking
+            // Check for existing payments
             const existingPayment = await this.paymentModel.findOne({
-                bookingId: new Types.ObjectId(dto.bookingId),
+                bookingId: bookingObjectId,
                 status: { $in: [PaymentStatus.PAID, PaymentStatus.PENDING] }
             }).session(session);
 
@@ -48,40 +58,45 @@ export class PaymentsService {
 
             // Create payment
             const payment = await this.paymentModel.create([{
-                userId: new Types.ObjectId(userId),
-                bookingId: new Types.ObjectId(dto.bookingId),
+                userId: userObjectId,
+                bookingId: bookingObjectId,
                 amount: dto.amount,
                 currency: dto.currency || 'USD',
                 status: PaymentStatus.PENDING,
             }], { session });
 
-            // Here you could integrate with a payment gateway
-            try {
-                // await this.processExternalPayment(payment[0]);
-                await session.commitTransaction();
-                return payment[0];
-            } catch (error) {
-                await session.abortTransaction();
-                await payment[0].updateOne({ status: PaymentStatus.FAILED });
-                throw new BadRequestException('Payment processing failed');
-            }
+            await session.commitTransaction();
+
+            return this.mapToResponseDto(payment[0]);
         } catch (error) {
             await session.abortTransaction();
             throw error;
         } finally {
-            await session.endSession();
+            session.endSession();
         }
     }
 
-    async updatePayment(id: string, dto: UpdatePaymentDto): Promise<PaymentDocument> {
+    private mapToResponseDto(payment: PaymentDocument): PaymentResponseDto {
+        return {
+            id: payment._id.toString(),
+            userId: payment.userId.toString(),
+            bookingId: payment.bookingId.toString(),
+            amount: payment.amount,
+            currency: payment.currency || 'USD',
+            status: payment.status,
+            createdAt: payment.createdAt,
+            updatedAt: payment.updatedAt,
+            transactionId: payment.transactionId
+        };
+    }
+
+    async updatePayment(id: string, dto: UpdatePaymentDto): Promise<PaymentResponseDto> {
         const payment = await this.findById(id);
 
-        // Add validation logic based on status transitions
         if (payment.status === PaymentStatus.PAID && dto.status === PaymentStatus.PENDING) {
             throw new BadRequestException('Cannot change status from PAID to PENDING');
         }
 
-        // Update payment with null check
         const updatedPayment = await this.paymentModel
             .findByIdAndUpdate(id, dto, { new: true })
             .exec();
@@ -90,32 +105,24 @@ export class PaymentsService {
             throw new NotFoundException(`Payment #${id} not found`);
         }
 
-        // If payment is marked as PAID, update booking status
         if (dto.status === PaymentStatus.PAID) {
             await this.bookingsService.confirmBooking(payment.bookingId.toString());
         }
 
-        return updatedPayment;
+        return this.mapToResponseDto(updatedPayment);
     }
 
-    // Отримати дані одного платежу
-    async findById(id: string): Promise<PaymentDocument> {
+    async findById(id: string): Promise<PaymentResponseDto> {
         const payment = await this.paymentModel.findById(id).exec();
         if (!payment) {
             throw new NotFoundException(`Payment #${id} not found`);
         }
-        return payment;
+        return this.mapToResponseDto(payment);
     }
 
-    // Вибірка всіх платежів користувача (або загалом)
-    async findAll(userId?: string): Promise<PaymentDocument[]> {
+    async findAll(userId?: string): Promise<PaymentResponseDto[]> {
         const filter = userId ? { userId: new Types.ObjectId(userId) } : {};
-        return this.paymentModel.find(filter).exec();
+        const payments = await this.paymentModel.find(filter).exec();
+        return payments.map(payment => this.mapToResponseDto(payment));
     }
-
-    // (опційно) Реальний виклик платіжного сервісу
-    // async processExternalPayment(payment: PaymentDocument) {
-    //   // Наприклад, виклик Stripe/PayPal API
-    //   // Залежно від результату, оновити payment.status
-    // }
 }

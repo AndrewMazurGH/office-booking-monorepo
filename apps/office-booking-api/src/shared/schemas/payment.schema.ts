@@ -13,24 +13,29 @@ export enum PaymentStatus {
 @Schema({ timestamps: true })
 export class Payment {
     @Prop({ type: Types.ObjectId, required: true })
-    userId: Types.ObjectId;   // Якщо ви хочете зберігати, хто платить
+    userId: Types.ObjectId;
 
     @Prop({ type: Types.ObjectId, required: true })
-    bookingId: Types.ObjectId; // Посилання на бронювання
+    bookingId: Types.ObjectId;
 
     @Prop({ required: true })
-    amount: number;   // Сума (наприклад, 100.00)
+    amount: number;
 
     @Prop({ default: 'USD' })
-    currency: string; // Валюта (USD, EUR, UAH)
+    currency: string;
 
     @Prop({ enum: PaymentStatus, default: PaymentStatus.PENDING })
     status: PaymentStatus;
 
     @Prop()
-    transactionId?: string;  // ID транзакції з платіжної системи
+    transactionId?: string;
 
-    // За потреби можна додати більше полів: платіжний шлюз, метадані, коментарі тощо
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);
+
+// Add indexes for better query performance
+PaymentSchema.index({ userId: 1, status: 1 });
+PaymentSchema.index({ bookingId: 1 });

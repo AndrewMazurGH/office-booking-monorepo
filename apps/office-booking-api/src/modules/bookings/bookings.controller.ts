@@ -190,7 +190,7 @@ export class BookingsController {
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Скасувати (видалити) бронювання' })
+  @ApiOperation({ summary: 'Скасувати бронювання' })
   @ApiParam({
     name: 'id',
     description: 'ID бронювання',

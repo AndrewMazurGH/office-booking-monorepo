@@ -207,13 +207,12 @@ export class BookingsService {
   }
 
   private mapBookingToDTO(doc: BookingDocument): BookingType {
-    console.log('Mapping booking document:', doc);
     return {
-      id: doc._id ? doc._id.toString() : null,
-      userId: doc.userId ? doc.userId.toString() : null,
-      cabinId: doc.cabinId ? doc.cabinId.toString() : null,
-      startDate: doc.startDate ? doc.startDate.toISOString() : null,
-      endDate: doc.endDate ? doc.endDate.toISOString() : null,
+      id: doc._id.toString(),
+      userId: doc.userId.toString(), // Ensure userId is converted to string
+      cabinId: doc.cabinId.toString(),
+      startDate: doc.startDate.toISOString(),
+      endDate: doc.endDate.toISOString(),
       status: doc.status as BookingStatus,
       notes: doc.notes || '',
     };
