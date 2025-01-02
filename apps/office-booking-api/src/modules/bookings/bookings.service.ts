@@ -107,22 +107,30 @@ export class BookingsService {
 
   async findById(id: string): Promise<BookingType> {
     try {
+      console.log('findById called with:', id);
+
       if (!Types.ObjectId.isValid(id)) {
         throw new BadRequestException('Invalid booking id format');
       }
 
       const booking = await this.bookingModel
         .findById(id)
-        .populate('userId', 'name email')
+        .populate('userId', 'email')
         .populate('cabinId', 'name capacity')
         .exec();
+
+      console.log('Found booking:', booking);
 
       if (!booking) {
         throw new NotFoundException(`Booking #${id} not found`);
       }
 
-      return this.mapBookingToDTO(booking);
+      const mappedBooking = this.mapBookingToDTO(booking);
+      console.log('Mapped booking:', mappedBooking);
+
+      return mappedBooking;
     } catch (error) {
+      console.error('Error in findById:', error);
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
@@ -207,14 +215,34 @@ export class BookingsService {
   }
 
   private mapBookingToDTO(doc: BookingDocument): BookingType {
-    return {
+    // Правильно отримуємо userId
+    const userId = doc.userId instanceof Types.ObjectId
+      ? doc.userId.toString()
+      : (doc.userId as any)?._id?.toString();
+
+    // Правильно отримуємо cabinId
+    const cabinId = doc.cabinId instanceof Types.ObjectId
+      ? doc.cabinId.toString()
+      : (doc.cabinId as any)?._id?.toString();
+
+    console.log('Mapping booking to DTO:', {
       id: doc._id.toString(),
-      userId: doc.userId.toString(), // Ensure userId is converted to string
-      cabinId: doc.cabinId.toString(),
+      userId,
+      cabinId,
       startDate: doc.startDate.toISOString(),
       endDate: doc.endDate.toISOString(),
-      status: doc.status as BookingStatus,
-      notes: doc.notes || '',
+      status: doc.status,
+      notes: doc.notes || ''
+    });
+
+    return {
+      id: doc._id.toString(),
+      userId,
+      cabinId,
+      startDate: doc.startDate.toISOString(),
+      endDate: doc.endDate.toISOString(),
+      status: doc.status,
+      notes: doc.notes || ''
     };
   }
 }

@@ -48,7 +48,7 @@ export class PaymentsController {
             example1: {
                 value: {
                     bookingId: '507f1f77bcf86cd799439011',
-                    amount: 1000,
+                    amount: 100,
                     currency: 'USD'
                 },
                 summary: 'Basic Payment Creation'
@@ -141,7 +141,7 @@ export class PaymentsController {
         @User('id') userId: string,
         @User('role') userRole: string
     ): Promise<PaymentResponseDto> {
-        const payment = await this.paymentsService.findById(id);
+        const payment = await this.paymentsService.findPaymentById(id);
         if (payment.userId.toString() !== userId && !(await this.isAdminOrManager(userId))) {
             throw new ForbiddenException('У вас немає прав для перегляду цього платежу');
         }

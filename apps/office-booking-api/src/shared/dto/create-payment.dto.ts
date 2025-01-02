@@ -12,7 +12,7 @@ export class CreatePaymentDto {
     bookingId: string;
 
     @ApiProperty({
-        example: 1000,
+        example: 100,
         description: 'Сума платежу',
         minimum: 0,
     })
@@ -62,7 +62,7 @@ export class PaymentResponseDto {
     bookingId: string;
 
     @ApiProperty({
-        example: 1000,
+        example: 100,
         description: 'Сума платежу',
     })
     amount: number;
