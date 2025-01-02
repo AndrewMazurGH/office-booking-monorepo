@@ -194,23 +194,29 @@ describe('AppController (e2e)', () => {
         });
 
         it('should update booking', async () => {
-            // First create a booking
-            const bookingResponse = await request(app.getHttpServer())
+            // Спочатку створюємо бронювання
+            const createResponse = await request(app.getHttpServer())
                 .post('/api/bookings')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({
+                    cabinId: cabinId,
+                    startDate: new Date(Date.now() + 86400000).toISOString(), // + 1 день
+                    endDate: new Date(Date.now() + 172800000).toISOString(),  // + 2 дні
+                    notes: 'Test booking',
+                });
+
+            expect(createResponse.status).toBe(201);
+
+            // Потім оновлюємо його з повними даними
+            return request(app.getHttpServer())
+                .put(`/api/bookings/${createResponse.body.id}`)
                 .set('Authorization', `Bearer ${userToken}`)
                 .send({
                     cabinId: cabinId,
                     startDate: new Date(Date.now() + 86400000).toISOString(),
                     endDate: new Date(Date.now() + 172800000).toISOString(),
-                    notes: 'Test booking',
-                });
-
-            // Then update it
-            return request(app.getHttpServer())
-                .put(`/api/bookings/${bookingResponse.body.id}`)
-                .set('Authorization', `Bearer ${userToken}`)
-                .send({
                     notes: 'Updated test booking',
+                    status: 'pending'
                 })
                 .expect(200)
                 .expect(res => {
@@ -249,6 +255,24 @@ describe('AppController (e2e)', () => {
         });
 
         it('should create a payment for booking', async () => {
+            // Створюємо бронювання
+            const bookingResponse = await request(app.getHttpServer())
+                .post('/api/bookings')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({
+                    cabinId: cabinId,
+                    startDate: new Date(Date.now() + 86400000).toISOString(),
+                    endDate: new Date(Date.now() + 172800000).toISOString(),
+                    notes: 'Test booking for payment',
+                });
+
+            expect(bookingResponse.status).toBe(201);
+
+            // Перевіряємо що бронювання успішно створено
+            const bookingId = bookingResponse.body.id;
+            expect(bookingId).toBeDefined();
+
+            // Створюємо платіж
             const response = await request(app.getHttpServer())
                 .post('/api/payments')
                 .set('Authorization', `Bearer ${userToken}`)
@@ -259,8 +283,9 @@ describe('AppController (e2e)', () => {
                 })
                 .expect(201);
 
-            paymentId = response.body.id;
-            expect(response.body).toHaveProperty('status', 'PENDING');
+            const paymentId = response.body.id;
+            expect(paymentId).toBeDefined();
+            expect(response.body.status).toBe('PENDING');
         });
 
         it('should get user payments', () => {

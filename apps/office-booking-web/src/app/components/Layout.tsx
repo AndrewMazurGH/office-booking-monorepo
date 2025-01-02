@@ -1,60 +1,77 @@
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import styles from './Layout.module.css';
 
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Bookings', href: '/bookings' },
-  { name: 'Profile', href: '/profile' },
-];
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const isLoggedIn = !!localStorage.getItem('access_token');
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div>
-      <nav className="nav">
-        <div className="container nav-content">
-          <Link to="/" className="nav-link">
-            <h1>Office Booking</h1>
+      <header className={styles['header']}>
+        <div className={styles['headerContent']}>
+          <Link to="/" className={styles['logo']}>
+            <svg 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="white"
+              style={{ opacity: 0.9 }}
+            >
+              <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V8h14v12z"/>
+            </svg>
+            <span className={styles['logoText']}>Office Booking</span>
           </Link>
-          
-          <div className="nav-links">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`nav-link ${location.pathname === item.href ? 'active' : ''}`}
-              >
-                {item.name}
-              </Link>
-            ))}
-            
-            {!isLoggedIn ? (
-              <Link to="/login" className="btn btn-primary">
-                Log in
-              </Link>
-            ) : (
-              <button
-                onClick={() => {
-                  localStorage.removeItem('access_token');
-                  window.location.href = '/login';
-                }}
-                className="btn btn-primary"
-              >
-                Sign out
-              </button>
-            )}
-          </div>
-        </div>
-      </nav>
 
-      <main className="main-content">
+          <nav className={styles['nav']}>
+            <Link
+              to="/"
+              className={`${styles['navLink']} ${location.pathname === '/' ? styles['active'] : ''}`}
+            >
+              Home
+            </Link>
+            <Link
+              to="/bookings"
+              className={`${styles['navLink']} ${location.pathname === '/bookings' ? styles['active'] : ''}`}
+            >
+              Bookings
+            </Link>
+            <Link
+              to="/profile"
+              className={`${styles['navLink']} ${location.pathname === '/profile' ? styles['active'] : ''}`}
+            >
+              Profile
+            </Link>
+            <Link
+              to="/admin"
+              className={`${styles['navLink']} ${location.pathname === '/admin' ? styles['active'] : ''}`}
+            >
+              Admin Panel
+            </Link>
+            <button 
+              onClick={handleSignOut}
+              className={styles['signOutButton']}
+            >
+              Sign out
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <main className={styles['mainContent']}>
         <div className="container">
-          <div className="card">
-            {children}
-          </div>
+          {children}
         </div>
       </main>
     </div>
   );
-}
+};
+
+export default Layout;

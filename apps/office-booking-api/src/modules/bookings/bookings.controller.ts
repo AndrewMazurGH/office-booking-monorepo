@@ -179,7 +179,7 @@ export class BookingsController {
     if (booking.userId.toString() !== userId) {
       throw new ForbiddenException('You can update only your own bookings');
     }
-
+    console.log('Incoming DTO:', updateBookingDto);
     return this.bookingsService.update(bookingId, updateBookingDto);
   }
 

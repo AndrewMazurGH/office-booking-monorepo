@@ -17,7 +17,7 @@ export default function Bookings() {
       <ul>
         {bookings.map((b) => (
           <li key={b.id}>
-            Room: {b.roomId}, from {b.startDate} to {b.endDate} ({b.status})
+            Room: {b.cabinId}, from {b.startDate} to {b.endDate} ({b.status})
           </li>
         ))}
       </ul>

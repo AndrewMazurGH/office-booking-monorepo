@@ -1,24 +1,23 @@
-import axios, { AxiosError, InternalAxiosRequestConfig, AxiosRequestConfig } from 'axios';
+// apps/office-booking-web/src/app/services/api.ts
+import axios from 'axios';
 
-interface RefreshResponse {
-    access_token: string;
-    refresh_token: string;
-}
-
-// Backend URL should match your NestJS server
-const BASE_URL = 'http://localhost:3000/api';
-
-const axiosInstance = axios.create({
-    baseURL: BASE_URL,
+const api = axios.create({
+    baseURL: 'http://localhost:3000',
     headers: {
         'Content-Type': 'application/json',
-    },
-    withCredentials: true
+    }
 });
 
-axiosInstance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-        console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`, config.data || '');
+// Request interceptor
+api.interceptors.request.use(
+    (config) => {
+        // Log request
+        console.log('API Request:', {
+            url: config.url,
+            method: config.method,
+            data: config.data
+        });
+
         const token = localStorage.getItem('access_token');
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -26,18 +25,25 @@ axiosInstance.interceptors.request.use(
         return config;
     },
     (error) => {
-        console.error('[API] Request Error:', error);
+        console.error('API Request Error:', error);
         return Promise.reject(error);
     }
 );
 
-axiosInstance.interceptors.response.use(
+// Response interceptor
+api.interceptors.response.use(
     (response) => {
-        console.log(`[API] Response from ${response.config.url}:`, response.data);
-        return response.data;
+        // Log successful response
+        console.log('API Response:', {
+            url: response.config.url,
+            status: response.status,
+            data: response.data
+        });
+        return response;
     },
-    (error: AxiosError) => {
-        console.error('[API] Response Error:', {
+    (error) => {
+        // Log error response
+        console.error('API Error Response:', {
             url: error.config?.url,
             status: error.response?.status,
             data: error.response?.data
@@ -45,23 +51,5 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-const api = {
-    get: async <T>(url: string, config: AxiosRequestConfig = {}) => {
-        return axiosInstance.get<T>(url, config);
-    },
-
-    post: async <T>(url: string, data?: any, config: AxiosRequestConfig = {}) => {
-        return axiosInstance.post<T>(url, data, config);
-    },
-
-    put: async <T>(url: string, data?: any, config: AxiosRequestConfig = {}) => {
-        return axiosInstance.put<T>(url, data, config);
-    },
-
-    delete: async <T>(url: string, config: AxiosRequestConfig = {}) => {
-        return axiosInstance.delete<T>(url, config);
-    }
-};
 
 export default api;
