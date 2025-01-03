@@ -1,132 +1,223 @@
+/* Existing styles */
 .bookings-container {
-    padding: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .bookings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-  }
-  
-  .page-title {
-    font-size: 32px;
-    color: #333;
-    margin: 0;
-  }
-  
-  .new-booking-btn {
-    background: #4a90e2;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.2s;
-  }
-  
-  .new-booking-btn:hover {
-    background: #357abd;
-  }
-  
-  .bookings-table-container {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-  }
-  
-  .bookings-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .bookings-table th {
-    background: #f8f9fa;
-    padding: 16px;
-    text-align: left;
-    font-weight: 600;
-    color: #333;
-    border-bottom: 2px solid #e9ecef;
-  }
-  
-  .bookings-table td {
-    padding: 16px;
-    border-bottom: 1px solid #e9ecef;
-  }
-  
-  .bookings-table tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .bookings-table tr:hover {
-    background: #f8f9fa;
-  }
-  
-  .status-badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: capitalize;
-  }
-  
-  .status-pending {
-    background: #fff3cd;
-    color: #856404;
-  }
-  
-  .status-cancelled {
-    background: #f8d7da;
-    color: #721c24;
-  }
-  
-  .status-confirmed {
-    background: #d4edda;
-    color: #155724;
-  }
-  
-  .status-completed {
-    background: #cce5ff;
-    color: #004085;
-  }
-  
-  .date-cell {
-    color: #666;
-    white-space: nowrap;
-  }
-  
-  .cabin-cell {
-    font-family: monospace;
-    color: #666;
-  }
-  
-  .bookings-loading {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-    font-size: 16px;
-  }
-  
-  .bookings-error {
-    text-align: center;
-    padding: 20px;
-    margin: 20px;
-    background: #f8d7da;
-    color: #721c24;
-    border-radius: 6px;
-  }
-  
-  .no-bookings {
-    text-align: center;
-    padding: 40px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #666;
-  }
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bookings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: 32px;
+  color: #333;
+  margin: 0;
+}
+
+.new-booking-btn {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.new-booking-btn:hover {
+  background: #357abd;
+}
+
+.bookings-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bookings-table th {
+  background: #f8f9fa;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.bookings-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.bookings-table tr:last-child td {
+  border-bottom: none;
+}
+
+.bookings-table tr:hover {
+  background: #f8f9fa;
+}
+
+.cabin-cell {
+  font-family: monospace;
+  color: #666;
+}
+
+.date-cell {
+  color: #666;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-confirmed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-completed {
+  background: #cce5ff;
+  color: #004085;
+}
+
+/* New booking form styles - namespaced with booking-form prefix */
+.booking-form {
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.booking-form .form-group {
+  margin-bottom: 20px;
+}
+
+.booking-form .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.booking-form .form-select,
+.booking-form .form-input,
+.booking-form .form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.booking-form .form-select:focus,
+.booking-form .form-input:focus,
+.booking-form .form-textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.booking-form .form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.booking-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.booking-form .btn-primary,
+.booking-form .btn-secondary {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.booking-form .btn-primary {
+  background: #4a90e2;
+  color: white;
+  border: none;
+}
+
+.booking-form .btn-primary:hover {
+  background: #357abd;
+}
+
+.booking-form .btn-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.booking-form .btn-secondary:hover {
+  background: #f9fafb;
+}
+
+.booking-form .error-message {
+  padding: 12px;
+  margin-bottom: 20px;
+  background: #fee2e2;
+  border-left: 4px solid #ef4444;
+  color: #b91c1c;
+  border-radius: 4px;
+}
+
+.booking-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Loading and error states */
+.bookings-loading,
+.bookings-error,
+.no-bookings {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bookings-error {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.no-bookings {
+  color: #666;
+}

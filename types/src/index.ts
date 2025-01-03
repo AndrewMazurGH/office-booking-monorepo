@@ -37,6 +37,7 @@ export interface Booking {
     endDate: string;
     status: BookingStatus;
     notes?: string;
+    cabin?: Cabin;
 }
 
 export interface Payment {

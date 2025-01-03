@@ -1,40 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Input } from '../common';
-import { useCabins } from '../../hooks/useApi';
+import React, { useState, useEffect } from 'react';
 import { Booking, Cabin } from '@office-booking-monorepo/types';
+import api from '../../services/api';
 
 interface BookingFormProps {
   onSubmit: (data: Partial<Booking>) => Promise<void>;
   onCancel: () => void;
-  initialData?: Partial<Booking>;
-  submitLabel?: string;
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({
-  onSubmit,
-  onCancel,
-  initialData = {},
-  submitLabel = 'Create Booking'
-}) => {
-  const [formData, setFormData] = useState({
-    cabinId: initialData.cabinId || '',
-    startDate: initialData.startDate ? new Date(initialData.startDate).toISOString().slice(0, 16) : '',
-    endDate: initialData.endDate ? new Date(initialData.endDate).toISOString().slice(0, 16) : '',
-    notes: initialData.notes || ''
-  });
+const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) => {
   const [cabins, setCabins] = useState<Cabin[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { getAll } = useCabins();
+  const [formData, setFormData] = useState({
+    cabinId: '',
+    startDate: '',
+    endDate: '',
+    notes: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    loadCabins();
+    fetchCabins();
   }, []);
 
-  const loadCabins = async () => {
+  const fetchCabins = async () => {
     try {
-      const response = await getAll();
-      setCabins(response);
+      const response = await api.get('/api/cabins');
+      setCabins(response.data);
     } catch (err) {
       setError('Failed to load cabins');
     }
@@ -42,44 +33,53 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
-
+    setError('');
+    setIsLoading(true);
+  
     try {
-      await onSubmit(formData);
+      // Format dates to ISO string
+      const bookingData = {
+        ...formData,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+      };
+      console.log('Formatted booking data:', bookingData);
+      await onSubmit(bookingData);
     } catch (err) {
-      setError('Failed to create booking');
+      setError('Failed to create booking. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="booking-form">
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded">
+        <div className="error-message">
           {error}
         </div>
       )}
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Select Cabin
-        </label>
+      <div className="form-group">
+        <label htmlFor="cabinId">Select Cabin</label>
         <select
+          id="cabinId"
           name="cabinId"
           value={formData.cabinId}
-          onChange={handleChange}
-          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          onChange={handleInputChange}
+          className="form-select"
           required
         >
           <option value="">Select a cabin...</option>
-          {cabins.map((cabin) => (
+          {cabins.map(cabin => (
             <option key={cabin.id} value={cabin.id}>
               {cabin.name} (Capacity: {cabin.capacity})
             </option>
@@ -87,48 +87,60 @@ const BookingForm: React.FC<BookingFormProps> = ({
         </select>
       </div>
 
-      <div>
-        <Input
-          label="Start Date & Time"
+      <div className="form-group">
+        <label htmlFor="startDate">Start Date & Time</label>
+        <input
           type="datetime-local"
+          id="startDate"
           name="startDate"
           value={formData.startDate}
-          onChange={handleChange}
+          onChange={handleInputChange}
+          className="form-input"
           required
         />
       </div>
 
-      <div>
-        <Input
-          label="End Date & Time"
+      <div className="form-group">
+        <label htmlFor="endDate">End Date & Time</label>
+        <input
           type="datetime-local"
+          id="endDate"
           name="endDate"
           value={formData.endDate}
-          onChange={handleChange}
+          onChange={handleInputChange}
+          className="form-input"
           required
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Notes
-        </label>
+      <div className="form-group">
+        <label htmlFor="notes">Notes (Optional)</label>
         <textarea
+          id="notes"
           name="notes"
           value={formData.notes}
-          onChange={handleChange}
-          className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          onChange={handleInputChange}
+          className="form-textarea"
           rows={3}
         />
       </div>
 
-      <div className="flex justify-end space-x-2 pt-4">
-        <Button variant="secondary" onClick={onCancel} type="button">
+      <div className="form-actions">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="btn-secondary"
+          disabled={isLoading}
+        >
           Cancel
-        </Button>
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : submitLabel}
-        </Button>
+        </button>
+        <button
+          type="submit"
+          className="btn-primary"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Creating...' : 'Create Booking'}
+        </button>
       </div>
     </form>
   );
