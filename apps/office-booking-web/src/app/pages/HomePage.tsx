@@ -1,53 +1,45 @@
 import React from 'react';
-import styles from '../styles/shared.module.css';
 
 const HomePage = () => {
   return (
-    <div className={styles['pageContainer']}>
-      <div className={styles['card']}>
-        <div className={styles['header']}>
-          <h1 className={styles['title']}>Welcome to Office Booking</h1>
-          <p className={styles['subtitle']}>Manage your office space efficiently</p>
-        </div>
+    <div>
+      <div className="card">
+        <h1>Welcome to Office Booking</h1>
+        <p>Manage your office space efficiently</p>
+      </div>
 
-        <div className={styles['grid']}>
-          <div className={styles['card']}>
-            <h2 className={styles['title']}>Quick Stats</h2>
-            <div className={styles['flexRow']}>
-              <div>
-                <p>Active Bookings</p>
-                <h3>12</h3>
-              </div>
-              <div>
-                <p>Available Rooms</p>
-                <h3>8</h3>
-              </div>
+      <div className="grid">
+        <div className="card">
+          <h2>Quick Stats</h2>
+          <div className="stats-grid">
+            <div className="stat-item">
+              <p className="stat-label">Active Bookings</p>
+              <p className="stat-value">12</p>
+            </div>
+            <div className="stat-item">
+              <p className="stat-label">Available Rooms</p>
+              <p className="stat-value">8</p>
             </div>
           </div>
+        </div>
 
-          <div className={styles['card']}>
-            <h2 className={styles['title']}>Recent Activity</h2>
-            <table className={styles['table']}>
-              <thead>
-                <tr>
-                  <th>Room</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Meeting Room A</td>
-                  <td>Today, 2:00 PM</td>
-                  <td><span className={styles['badgeSuccess']}>Active</span></td>
-                </tr>
-                <tr>
-                  <td>Conference Room</td>
-                  <td>Tomorrow, 10:00 AM</td>
-                  <td><span className={styles['badgeWarning']}>Pending</span></td>
-                </tr>
-              </tbody>
-            </table>
+        <div className="card">
+          <h2>Recent Activity</h2>
+          <div className="activity-list">
+            <div className="activity-item">
+              <div>
+                <h3>Meeting Room A</h3>
+                <p className="text-secondary">Today, 2:00 PM</p>
+              </div>
+              <span className="badge badge-success">Active</span>
+            </div>
+            <div className="activity-item">
+              <div>
+                <h3>Conference Room</h3>
+                <p className="text-secondary">Tomorrow, 10:00 AM</p>
+              </div>
+              <span className="badge badge-warning">Pending</span>
+            </div>
           </div>
         </div>
       </div>

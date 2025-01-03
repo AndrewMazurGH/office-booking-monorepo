@@ -1,69 +1,94 @@
-// apps/office-booking-web/src/app/contexts/AuthContext.tsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { UserRole } from '@office-booking-monorepo/types';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { User, UserRole } from '@office-booking-monorepo/types';
 import api from '../services/api';
 
-interface User {
-  id: string;
-  email: string;
-  role: UserRole;
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
 }
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: User | null;
+interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  isAdmin: () => boolean;
+  isManager: () => boolean;
+}
+
+interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  const [authState, setAuthState] = useState<AuthState>(() => {
     const token = localStorage.getItem('access_token');
-    if (token) {
-      fetchUserInfo();
-    }
-  }, []);
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+    return {
+      isAuthenticated: !!token,
+      user
+    };
+  });
 
-  const fetchUserInfo = async () => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
-      const response = await api.get('/api/users/me');
-      setUser(response.data);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Failed to fetch user info:', error);
-      logout();
-    }
-  };
-
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await api.post('/api/auth/login', {
+      // Login request
+      const { data: tokens } = await api.post<LoginResponse>('/api/auth/login', {
         email,
         password
       });
 
-      const { access_token } = response.data;
-      localStorage.setItem('access_token', access_token);
-      await fetchUserInfo();
+      // Store tokens
+      localStorage.setItem('access_token', tokens.access_token);
+      localStorage.setItem('refresh_token', tokens.refresh_token);
+
+      // Set token in axios defaults
+      api.defaults.headers.common['Authorization'] = `Bearer ${tokens.access_token}`;
+
+      // Fetch user data
+      const { data: userData } = await api.get<User>('/api/users/me');
+
+      // Store user data
+      localStorage.setItem('user', JSON.stringify(userData));
+      setAuthState({
+        isAuthenticated: true,
+        user: userData
+      });
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('access_token');
-    setIsAuthenticated(false);
-    setUser(null);
-  };
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+    delete api.defaults.headers.common['Authorization'];
+    setAuthState({
+      isAuthenticated: false,
+      user: null
+    });
+  }, []);
+
+  const isAdmin = useCallback(() => {
+    return authState.user?.role === UserRole.ADMIN;
+  }, [authState.user]);
+
+  const isManager = useCallback(() => {
+    return authState.user?.role === UserRole.MANAGER;
+  }, [authState.user]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{
+      ...authState,
+      login,
+      logout,
+      isAdmin,
+      isManager
+    }}>
       {children}
     </AuthContext.Provider>
   );

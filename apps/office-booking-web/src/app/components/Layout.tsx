@@ -1,74 +1,66 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+// src/app/components/Layout.tsx
+import React, { ReactNode } from 'react';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import styles from './Layout.module.css';
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+interface LayoutProps {
+  children?: ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
-  const handleSignOut = () => {
+  const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
   return (
     <div>
-      <header className={styles['header']}>
-        <div className={styles['headerContent']}>
-          <Link to="/" className={styles['logo']}>
-            <svg 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="white"
-              style={{ opacity: 0.9 }}
-            >
-              <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V8h14v12z"/>
-            </svg>
-            <span className={styles['logoText']}>Office Booking</span>
+      <header className="header">
+        <div className="container header-content">
+          <Link to="/" className="logo">
+            <h1>Office Booking</h1>
           </Link>
 
-          <nav className={styles['nav']}>
-            <Link
-              to="/"
-              className={`${styles['navLink']} ${location.pathname === '/' ? styles['active'] : ''}`}
+          <nav className="nav-menu">
+            <Link 
+              to="/" 
+              className={'nav-link ' + (location.pathname === '/' ? 'active' : '')}
             >
               Home
             </Link>
-            <Link
-              to="/bookings"
-              className={`${styles['navLink']} ${location.pathname === '/bookings' ? styles['active'] : ''}`}
+            <Link 
+              to="/bookings" 
+              className={'nav-link ' + (location.pathname === '/bookings' ? 'active' : '')}
             >
               Bookings
             </Link>
-            <Link
-              to="/profile"
-              className={`${styles['navLink']} ${location.pathname === '/profile' ? styles['active'] : ''}`}
+            <Link 
+              to="/profile" 
+              className={'nav-link ' + (location.pathname === '/profile' ? 'active' : '')}
             >
               Profile
             </Link>
-            <Link
-              to="/admin"
-              className={`${styles['navLink']} ${location.pathname === '/admin' ? styles['active'] : ''}`}
-            >
-              Admin Panel
-            </Link>
-            <button 
-              onClick={handleSignOut}
-              className={styles['signOutButton']}
-            >
+            {(user?.role === 'admin' || user?.role === 'manager') && (
+              <Link 
+                to="/admin" 
+                className={'nav-link ' + (location.pathname.startsWith('/admin') ? 'active' : '')}
+              >
+                Admin Panel
+              </Link>
+            )}
+            <button onClick={handleLogout} className="button button-secondary">
               Sign out
             </button>
           </nav>
         </div>
       </header>
 
-      <main className={styles['mainContent']}>
-        <div className="container">
-          {children}
-        </div>
+      <main className="container" style={{ padding: '2rem 0' }}>
+        <Outlet />
       </main>
     </div>
   );

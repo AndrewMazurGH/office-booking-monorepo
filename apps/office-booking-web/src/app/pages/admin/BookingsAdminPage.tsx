@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BookingStatus } from '@office-booking-monorepo/types';
 import api from '../../services/api';
 import styles from '../../styles/shared.module.css';
+import { Card, Table, Badge, Button, Modal } from '../../components/common';
+import { useBookings } from '../../hooks/useApi';
+import BookingForm from '../../components/BookingForm';
 
 interface Booking {
   id: string;
