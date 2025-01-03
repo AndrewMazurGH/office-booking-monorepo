@@ -16,6 +16,7 @@ interface User {
 interface NewUser {
   email: string;
   password: string;
+  nickname: string;
   firstName?: string;
   lastName?: string;
   phone?: string;
@@ -34,6 +35,7 @@ const UsersAdminPage = () => {
   const [newUser, setNewUser] = useState<NewUser>({
     email: '',
     password: '',
+    nickname: '',
     firstName: '',
     lastName: '',
     phone: '',
@@ -70,6 +72,7 @@ const UsersAdminPage = () => {
       setNewUser({
         email: '',
         password: '',
+        nickname: '',
         firstName: '',
         lastName: '',
         phone: '',
@@ -198,6 +201,17 @@ const UsersAdminPage = () => {
                     type="password"
                     value={newUser.password}
                     onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    className={styles['input']}
+                    required
+                  />
+                </div>
+
+                <div className={styles['formGroup']}>
+                  <label className={styles['label']}>Nickname</label>
+                  <input
+                    type="text"
+                    value={newUser.nickname}
+                    onChange={(e) => setNewUser({ ...newUser, nickname: e.target.value })}
                     className={styles['input']}
                     required
                   />

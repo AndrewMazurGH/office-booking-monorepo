@@ -42,7 +42,7 @@ const CabinsAdminPage = () => {
   const handleAddCabin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/api/cabins', newCabin);
+      await api.post('/api/cabins/new', newCabin);
       await fetchCabins();
       setShowAddModal(false);
       setNewCabin({

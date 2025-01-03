@@ -99,7 +99,7 @@ const PaymentsAdminPage = () => {
 
   const handleUpdatePaymentStatus = async (paymentId: string, newStatus: PaymentStatus) => {
     try {
-      await api.patch(`/api/payments/${paymentId}`, { status: newStatus });
+      await api.put(`/api/payments/${paymentId}`, { status: newStatus });
       await fetchData();
     } catch (err) {
       setError('Failed to update payment status');
