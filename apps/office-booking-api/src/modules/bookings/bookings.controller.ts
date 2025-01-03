@@ -40,7 +40,7 @@ export class BookingsController {
    * Створити бронювання
    * Доступно всім залогіненим користувачам
    */
-  @Post()
+  @Post('new')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Створити бронювання' })
   @ApiBody({

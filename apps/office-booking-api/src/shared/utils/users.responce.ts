@@ -1,8 +1,12 @@
 export class UserResponse {
-    id: string;  // Changed from userId to id for consistency
+    id: string;
     email: string;
-    createdAt?: Date;
     role?: string;
+    nickname?: string;
+    phone?: string;
+    firstName?: string;
+    lastName?: string;
+    createdAt?: Date;
 
     constructor(partial: Partial<UserResponse>) {
         Object.assign(this, partial);
@@ -10,10 +14,14 @@ export class UserResponse {
 
     static fromDocument(doc: any): UserResponse {
         return new UserResponse({
-            id: doc.id || doc._id.toString(), // Handle both id and _id
+            id: doc.id || doc._id.toString(),
             email: doc.email,
-            createdAt: doc.createdAt,
-            role: doc.role || 'user'
+            role: doc.role || 'user',
+            nickname: doc.nickname,
+            phone: doc.phone,
+            firstName: doc.firstName,
+            lastName: doc.lastName,
+            createdAt: doc.createdAt
         });
     }
 }

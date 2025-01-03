@@ -65,6 +65,15 @@ h3 {
   align-items: center;
 }
 
+.header .logo {
+  color: #ffffff; /* This will make it white */
+  text-decoration: none;
+}
+
+.header .logo:hover {
+  opacity: 0.9;
+}
+
 .nav-menu {
   display: flex;
   gap: 1.5rem;

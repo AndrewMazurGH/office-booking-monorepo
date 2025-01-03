@@ -1,0 +1,76 @@
+.profile-container {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .profile-card {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-title {
+    font-size: 32px;
+    color: #333;
+    margin: 0 0 24px 0;
+  }
+  
+  .role-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #d4edda;
+    color: #155724;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+  
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  
+  .profile-field {
+    margin-bottom: 16px;
+  }
+  
+  .profile-field label {
+    display: block;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  
+  .profile-field p {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+    padding: 8px 0;
+  }
+  
+  .profile-loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+  
+  .sign-out-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .sign-out-btn:hover {
+    background: #c82333;
+  }

@@ -23,10 +23,6 @@ export class UsersService {
         @InjectModel(User.name) private userModel: Model<UserDocument>,
     ) { }
 
-    async findUserDocument(email: string): Promise<UserDocument | null> {
-        return this.userModel.findOne({ email }).exec();
-    }
-
     async createUser(createUserDto: CreateUserDto): Promise<UserResponse> {
         // Password validation
         if (createUserDto.password.length < 8) {
@@ -60,33 +56,30 @@ export class UsersService {
     }
 
     async findById(id: string): Promise<UserResponse> {
-        // Add logging to debug
-        console.log('Searching for user with ID:', id);
-
         try {
-            // Convert string ID to ObjectId
+            console.log('Searching for user with ID:', id);
+
             const objectId = new Types.ObjectId(id);
             const user = await this.userModel.findById(objectId).exec();
 
-            console.log('Found user:', user);  // Debug log
+            console.log('Found user document:', user); // Debug log
 
             if (!user) {
                 throw new NotFoundException(`User #${id} not found`);
             }
 
-            return {
-                id: user._id.toString(),
-                email: user.email,
-                role: user.role,
-                createdAt: user.createdAt
-            };
+            return UserResponse.fromDocument(user);
         } catch (error) {
-            console.error('Error finding user:', error);  // Debug log
+            console.error('Error finding user:', error);
             if (error instanceof NotFoundException) {
                 throw error;
             }
             throw new NotFoundException(`User #${id} not found`);
         }
+    }
+
+    async findUserDocument(email: string): Promise<UserDocument | null> {
+        return this.userModel.findOne({ email }).exec();
     }
 
     async findByEmail(email: string): Promise<UserResponse | null> {
