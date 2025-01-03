@@ -1,88 +1,88 @@
-/* apps/office-booking-web/src/app/components/AdminLayout.module.css */
-.adminContainer {
-    min-height: 100vh;
-    background-color: #f5f5f5;
-  }
-  
-  .header {
-    background: linear-gradient(to right, #1a237e, #283593);
-    padding: 1rem 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-  }
-  
-  .headerContent {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-  }
-  
-  .logoText {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: white;
-    letter-spacing: -0.5px;
-  }
-  
-  .nav {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  
-  .navLink {
-    color: rgba(255, 255, 255, 0.9);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: all 0.2s;
-  }
-  
-  .navLink:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  .navLink.active {
-    color: white;
-    background: rgba(255, 255, 255, 0.15);
-  }
-  
-  .signOutButton {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-    margin-left: 1rem;
-  }
-  
-  .signOutButton:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-  
-  .content {
-    padding-top: 80px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 100px 2rem 2rem;
-  }
+.adminLayoutContainer {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.adminLayoutHeader {
+  background: linear-gradient(to right, #1a237e, #283593);
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.adminLayoutHeaderContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.adminLayoutLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.adminLayoutLogoText {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.adminLayoutNav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.adminLayoutNavLink {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.adminLayoutNavLink:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.adminLayoutNavLinkActive {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.adminLayoutSignOutButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-left: 1rem;
+}
+
+.adminLayoutSignOutButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.adminLayoutContent {
+  padding-top: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 2rem 2rem;
+}
+

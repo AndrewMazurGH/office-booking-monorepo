@@ -19,8 +19,14 @@ export class CabinsService {
     }
 
     async findAll() {
-        // Наприклад, повертати лише ті, що isAvailable = true
-        return this.cabinModel.find({ isAvailable: true }).exec();
+        const cabins = await this.cabinModel.find({ isAvailable: true }).exec();
+        // Make sure to properly transform MongoDB docs to plain objects
+        return cabins.map(cabin => ({
+            id: cabin._id.toString(),
+            name: cabin.name,
+            capacity: cabin.capacity,
+            isAvailable: cabin.isAvailable
+        }));
     }
 
     async findById(id: string) {

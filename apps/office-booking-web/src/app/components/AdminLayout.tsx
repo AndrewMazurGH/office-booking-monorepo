@@ -1,9 +1,9 @@
-// src/app/components/AdminLayout.tsx
 import React from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './common';
 import { UserRole } from '@office-booking-monorepo/types';
+import styles from './AdminLayout.module.css';
 
 const AdminUserMenu = () => {
   const { user, logout } = useAuth();
@@ -15,19 +15,19 @@ const AdminUserMenu = () => {
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="text-white">
-        <div className="text-sm opacity-90">
+    <div className={styles['adminLayoutFlexRow']}>
+      <div className={styles['adminLayoutUserInfo']}>
+        <div className={styles['adminLayoutUserName']}>
           {user?.firstName} {user?.lastName}
         </div>
-        <div className="text-xs opacity-75">
+        <div className={styles['adminLayoutUserRole']}>
           {user?.role === UserRole.ADMIN ? 'Administrator' : 'Manager'}
         </div>
       </div>
-      <Button 
-        variant="secondary" 
+      <Button
+        variant="secondary"
         onClick={handleLogout}
-        className="text-sm"
+        className={styles['adminLayoutSignOutButton']}
       >
         Sign out
       </Button>
@@ -48,57 +48,55 @@ const AdminLayout = () => {
   const isActiveLink = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-gradient-to-r from-indigo-800 to-indigo-900 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-8">
-              <Link to="/admin" className="flex items-center gap-2">
-                <svg 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 24 24" 
-                  fill="white"
-                  className="opacity-90"
-                >
-                  <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V8h14v12z"/>
-                </svg>
-                <span className="text-white font-semibold text-xl">
-                  Admin Panel
-                </span>
-              </Link>
-
-              <nav className="flex items-center gap-1">
-                {adminNavLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActiveLink(link.to)
-                        ? 'bg-white/15 text-white'
-                        : 'text-white/80 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Link
-                to="/"
-                className="text-white/80 hover:text-white text-sm font-medium px-3 py-2"
+    <div className={styles['adminLayoutContainer']}>
+      <header className={styles['adminLayoutHeader']}>
+        <div className={styles['adminLayoutHeaderContent']}>
+          <div className={styles['adminLayoutNavGroup']}>
+            <Link to="/admin" className={styles['adminLayoutLogo']}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="white"
+                className={styles['adminLayoutLogoIcon']}
               >
-                Back to Site
-              </Link>
-              <AdminUserMenu />
-            </div>
+                <path d="M19 4H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V8h14v12z" />
+              </svg>
+              <span className={styles['adminLayoutLogoText']}>
+                Admin Panel
+              </span>
+            </Link>
+
+            <nav className={styles['adminLayoutNav']}>
+              {adminNavLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`${styles['adminLayoutNavLink']} ${
+                    isActiveLink(link.to)
+                      ? styles['adminLayoutNavLinkActive']
+                      : styles['adminLayoutNavLinkInactive']
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className={styles['adminLayoutHeaderRight']}>
+            <Link
+              to="/"
+              className={styles['adminLayoutBackToSite']}
+            >
+              Back to Site
+            </Link>
+            <AdminUserMenu />
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className={styles['adminLayoutContent']}>
         <Outlet />
       </main>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { Booking, Cabin } from '@office-booking-monorepo/types';
 import api from '../../services/api';
 
@@ -7,16 +7,23 @@ interface BookingFormProps {
   onCancel: () => void;
 }
 
+interface FormData {
+  cabinId: string;
+  startDate: string;
+  endDate: string;
+  notes: string;
+}
+
 const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) => {
   const [cabins, setCabins] = useState<Cabin[]>([]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     cabinId: '',
     startDate: '',
     endDate: '',
     notes: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchCabins();
@@ -24,35 +31,43 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) => {
 
   const fetchCabins = async () => {
     try {
-      const response = await api.get('/api/cabins');
+      const response = await api.get<Cabin[]>('/api/cabins');
+      console.log('Fetched cabins:', response.data);
       setCabins(response.data);
     } catch (err) {
+      console.error('Error fetching cabins:', err);
       setError('Failed to load cabins');
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-  
+
     try {
-      // Format dates to ISO string
+      if (!formData.cabinId) {
+        throw new Error('Please select a valid cabin');
+      }
+
       const bookingData = {
-        ...formData,
+        cabinId: formData.cabinId,
         startDate: new Date(formData.startDate).toISOString(),
         endDate: new Date(formData.endDate).toISOString(),
+        notes: formData.notes
       };
-      console.log('Formatted booking data:', bookingData);
+
+      console.log('Submitting booking:', bookingData);
       await onSubmit(bookingData);
     } catch (err) {
-      setError('Failed to create booking. Please try again.');
+      console.error('Error creating booking:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create booking');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -79,7 +94,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ onSubmit, onCancel }) => {
           required
         >
           <option value="">Select a cabin...</option>
-          {cabins.map(cabin => (
+          {cabins.map((cabin) => (
             <option key={cabin.id} value={cabin.id}>
               {cabin.name} (Capacity: {cabin.capacity})
             </option>

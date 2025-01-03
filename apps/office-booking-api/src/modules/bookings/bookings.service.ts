@@ -29,19 +29,39 @@ export class BookingsService {
     createBookingDto: CreateBookingDto,
   ): Promise<BookingDocument> {
     try {
+      console.log('Creating booking with data:', {
+        userId,
+        ...createBookingDto
+      });
+
       // Validate ObjectIds
       if (!Types.ObjectId.isValid(userId) || !Types.ObjectId.isValid(createBookingDto.cabinId)) {
+        console.log('Invalid ID format:', {
+          userId,
+          cabinId: createBookingDto.cabinId,
+          isValidUserId: Types.ObjectId.isValid(userId),
+          isValidCabinId: Types.ObjectId.isValid(createBookingDto.cabinId)
+        });
         throw new BadRequestException('Invalid userId or cabinId format');
       }
 
       const userObjectId = new Types.ObjectId(userId);
       const cabinObjectId = new Types.ObjectId(createBookingDto.cabinId);
+
+      console.log('Looking up cabin:', createBookingDto.cabinId);
       const cabin = await this.cabinsService.findById(createBookingDto.cabinId);
+      console.log('Found cabin:', cabin);
+
       if (!cabin || !cabin.isAvailable) {
         throw new BadRequestException('Cabin is not available');
       }
 
       // Check for booking conflicts
+      console.log('Checking for conflicts with:', {
+        startDate: createBookingDto.startDate,
+        endDate: createBookingDto.endDate
+      });
+
       const conflictingBooking = await this.bookingModel
         .findOne({
           cabinId: cabinObjectId,
@@ -56,10 +76,18 @@ export class BookingsService {
         .exec();
 
       if (conflictingBooking) {
+        console.log('Found conflicting booking:', conflictingBooking);
         throw new BadRequestException('Cabin is already booked for this time period');
       }
 
       // Create new booking
+      console.log('Creating new booking with:', {
+        userId: userObjectId,
+        cabinId: cabinObjectId,
+        startDate: createBookingDto.startDate,
+        endDate: createBookingDto.endDate
+      });
+
       const booking = await this.bookingModel.create({
         userId: userObjectId,
         cabinId: cabinObjectId,
@@ -71,6 +99,7 @@ export class BookingsService {
 
       return booking;
     } catch (error) {
+      console.error('Error in create booking:', error);
       if (error instanceof BadRequestException) {
         throw error;
       }

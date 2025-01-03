@@ -28,6 +28,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { User } from '../../common/decorators/user.decorator';
 import { UserRole } from '../../shared/utils/user-role.enum';
 import { Booking } from '@office-booking-monorepo/types';
+import { Types } from 'mongoose';
 
 
 @ApiTags('Bookings')
@@ -70,9 +71,23 @@ export class BookingsController {
     @User('id') userId: string,
     @Body() createBookingDto: CreateBookingDto,
   ) {
-    return this.bookingsService.create(userId, createBookingDto);
-  }
+    console.log('Creating booking with data:', {
+      userId,
+      ...createBookingDto
+    });
 
+    // Validate cabin ID
+    if (!Types.ObjectId.isValid(createBookingDto.cabinId)) {
+      throw new BadRequestException(`Invalid cabin ID format: ${createBookingDto.cabinId}`);
+    }
+
+    try {
+      return await this.bookingsService.create(userId, createBookingDto);
+    } catch (error) {
+      console.error('Booking creation error:', error);
+      throw error;
+    }
+  }
   /**
    * Отримати список бронювань (усіх)
    * Доступно тільки ADMIN i MANAGER

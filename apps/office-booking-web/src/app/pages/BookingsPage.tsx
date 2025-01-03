@@ -22,13 +22,8 @@ const BookingsPage: React.FC = () => {
       setBookings(response.data);
       setError(null);
     } catch (err) {
-      if (err instanceof Error) {
-        setError('Failed to load bookings');
-        console.error('Error fetching bookings:', err.message);
-      } else {
-        console.error('Unexpected error fetching bookings:', err);
-        setError('An unexpected error occurred.');
-      }
+      console.error('Error fetching bookings:', err);
+      setError('Failed to load bookings');
     } finally {
       setIsLoading(false);
     }
@@ -36,27 +31,19 @@ const BookingsPage: React.FC = () => {
 
   const handleCreateBooking = async (bookingData: Partial<Booking>) => {
     try {
-      console.log('Sending booking data:', bookingData);
-      await api.post('/api/bookings/new', bookingData);
+      console.log('Creating booking with data:', bookingData);
+      const response = await api.post('/api/bookings/new', bookingData);
+      console.log('Booking created:', response.data);
       await fetchBookings();
       setShowNewBookingModal(false);
     } catch (err) {
-      if (err instanceof Error) {
-        console.error('Error details:', err.message);
-        setError(err.message || 'Failed to create booking');
-      } else if (typeof err === 'object' && err && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } };
-        setError(axiosError.response?.data?.message || 'Failed to create booking');
-      } else {
-        console.error('Unexpected error creating booking:', err);
-        setError('An unexpected error occurred.');
-      }
+      console.error('Error creating booking:', err);
+      throw new Error(err instanceof Error ? err.message : 'Failed to create booking');
     }
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+    return new Date(dateString).toLocaleString();
   };
 
   const getStatusClass = (status: BookingStatus) => {
